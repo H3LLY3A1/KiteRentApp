@@ -41,39 +41,84 @@ final class KiteReservationViewModel: ObservableObject {
         isLoading = false
     }
     
-    func confirmReservation(kiteId: String, instructorId: String?, startTime: Date, endTime: Date) async {
-        guard !isLoading else { return }
-        errorMessage = nil
-        didCreateReservation = false
-        createdRentalId = nil
+//    func confirmReservation(kiteId: String, instructorId: String?, startTime: Date, endTime: Date) async {
+//        guard !isLoading else { return }
+//        errorMessage = nil
+//        didCreateReservation = false
+//        createdRentalId = nil
+//
+//        guard let instructorId = instructorId else {
+//            errorMessage = "Wybierz instruktora."
+//            return
+//        }
+//        guard endTime > startTime else {
+//            errorMessage = "Czas zakończenia musi być po czasie rozpoczęcia."
+//            return
+//        }
+//
+//        isLoading = true
+//        defer { isLoading = false }
+//
+//        let rentalId = UUID().uuidString
+//        let rental = DBRental(
+//            rentalId: rentalId,
+//            kiteId: kiteId,
+//            instructorId: instructorId,
+//            startTime: startTime,
+//            endTime: endTime
+//        )
+//
+//        do {
+//            try await RentalManager.shared.createNewRental(rental: rental)
+//            if var kite = try? await KiteManager.shared.getKite(kiteId: kiteId) {
+//                kite.state = .used
+//                try await KiteManager.shared.updateKite(kite: kite)
+//            }
+//            self.createdRentalId = rentalId
+//            self.didCreateReservation = true
+//        } catch {
+//            self.errorMessage = error.localizedDescription
+//        }
+//    }
+    
+    func confirmReservation(kite: DBKite, startTime: Date, endTime: Date) async {
+            guard let kiteId = kite.id else {
+                errorMessage = "Brak ID kite."
+                return
+            }
+            guard let instructorId = selectedInstructorId else {
+                errorMessage = "Wybierz instruktora."
+                return
+            }
+            guard endTime > startTime else {
+                errorMessage = "Czas zakończenia musi być po czasie rozpoczęcia."
+                return
+            }
 
-        guard let instructorId = instructorId else {
-            errorMessage = "Wybierz instruktora."
-            return
+            isLoading = true
+            defer { isLoading = false }
+            errorMessage = nil
+
+            let rentalId = UUID().uuidString
+            let rental = DBRental(
+                rentalId: rentalId,
+                kiteId: kiteId,
+                instructorId: instructorId,
+                startTime: startTime,
+                endTime: endTime
+            )
+
+            do {
+                try await RentalManager.shared.createNewRental(rental: rental)
+                self.createdRentalId = rentalId
+                self.didCreateReservation = true
+
+                var updatedKite = kite
+                updatedKite.state = .used
+                try await KiteManager.shared.updateKite(kite: updatedKite)
+
+            } catch {
+                self.errorMessage = error.localizedDescription
+            }
         }
-        guard endTime > startTime else {
-            errorMessage = "Czas zakończenia musi być po czasie rozpoczęcia."
-            return
-        }
-
-        isLoading = true
-        defer { isLoading = false }
-
-        let rentalId = UUID().uuidString
-        let rental = DBRental(
-            rentalId: rentalId,
-            kiteId: kiteId,
-            instructorId: instructorId,
-            startTime: startTime,
-            endTime: endTime
-        )
-
-        do {
-            try await RentalManager.shared.createNewRental(rental: rental)
-            self.createdRentalId = rentalId
-            self.didCreateReservation = true
-        } catch {
-            self.errorMessage = error.localizedDescription
-        }
-    }
 }

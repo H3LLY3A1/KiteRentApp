@@ -13,7 +13,24 @@ final class KitesurfingListViewModel: ObservableObject {
         return kites.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
     }
 
+//    func loadKites() async {
+//        guard !isLoading else { return }
+//        isLoading = true
+//        errorMessage = nil
+//        do {
+//            let fetched = try await KiteManager.shared.getAllKites()
+//            self.kites = fetched
+//        } catch {
+//            self.errorMessage = error.localizedDescription
+//        }
+//        isLoading = false
+//    }
+    
     func loadKites() async {
+        await refreshKites()
+    }
+    
+    func refreshKites() async {
         guard !isLoading else { return }
         isLoading = true
         errorMessage = nil

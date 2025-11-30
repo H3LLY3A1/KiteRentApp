@@ -6,9 +6,11 @@
 //
 
 import Foundation
+import FirebaseFirestore
 
 struct DBInstructor: Codable, Identifiable {
-    var id: String {instructorId}
+    @DocumentID var id: String?
+//    var id: String {instructorId}
     let instructorId: String
     let name: String
     let surname: String

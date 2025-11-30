@@ -43,3 +43,4 @@ struct KiteListView: View {
 #Preview {
     KiteListView()
 }
+

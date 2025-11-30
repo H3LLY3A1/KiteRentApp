@@ -5,11 +5,14 @@ struct ReservationButtons: View {
     @Environment(\.horizontalSizeClass) var hSizeClass
     
     let viewModel: KiteReservationViewModel
-    let kiteId: String
+//    let kiteId: String
+    let kite: DBKite
     let startTime: Date
     let endTime: Date
     let selectedInstructorId: String?
     
+    var onReservationComplete: (() -> Void)? = nil
+
     var isLargeScreen: Bool {
         hSizeClass == .regular
     }
@@ -36,13 +39,16 @@ struct ReservationButtons: View {
         return Button {
             Task {
                 await viewModel.confirmReservation(
-                    kiteId: kiteId,
-                    instructorId: selectedInstructorId,
+//                    kiteId: kiteId,
+//                    instructorId: selectedInstructorId,
+                    kite: kite,
                     startTime: startTime,
                     endTime: endTime
                 )
                 if viewModel.didCreateReservation {
                     showPopup = false
+                    
+                    onReservationComplete?()
                 }
             }
         } label: {
