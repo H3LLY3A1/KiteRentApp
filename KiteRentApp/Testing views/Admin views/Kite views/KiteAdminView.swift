@@ -12,27 +12,22 @@ struct KiteAdmin: View {
     
     var body: some View {
         ZStack {
-            VStack(alignment: .leading, spacing: 8) {
-                HStack {
+            HStack {
+                VStack(alignment: .leading, spacing: 8) {
                     Text(kite.name)
                         .font(.title2)
                         .fontWeight(.bold)
                         .lineLimit(1)
                     
-                    Spacer()
-                    
-                    Image(systemName: "pencil")
-                        .foregroundColor(.gray)
-                        .padding(.horizontal, 8)
-                    
-                    Image(systemName: "trash.fill")
-                        .foregroundColor(.red)
+                    TagView(text: textFromState(state: kite.state), backgroundColor: colorFromState(state: kite.state))
                 }
-                
-                TagView(text: textFromState(state: kite.state), backgroundColor: colorFromState(state: kite.state))
-                
                 Spacer()
-                                    
+                Image(systemName: "pencil")
+                    .foregroundColor(.gray)
+                    .padding(.horizontal, 8)
+                
+                Image(systemName: "trash.fill")
+                    .foregroundColor(.red)
             }
             .padding()
             .background(Color(.systemBackground))
@@ -41,7 +36,7 @@ struct KiteAdmin: View {
             
         }
         .frame(maxWidth: .infinity)
-
+        
     }
     
     func textFromState(state: KiteState) -> String {
